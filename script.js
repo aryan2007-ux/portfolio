@@ -77,48 +77,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Add parallax effect to hero section
+// Combined scroll handler with throttling for better performance
+let scrollTimeout;
 window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    const hero = document.querySelector('.hero');
-    const heroContent = document.querySelector('.hero-content');
-    
-    if (hero && scrolled < hero.offsetHeight) {
-        heroContent.style.transform = `translateY(${scrolled * 0.5}px)`;
-        heroContent.style.opacity = 1 - scrolled / 800;
+    if (scrollTimeout) {
+        return;
     }
-});
-
-// Navbar background on scroll
-window.addEventListener('scroll', () => {
-    const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 50) {
-        navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-        navbar.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-    } else {
-        navbar.style.background = 'rgba(255, 255, 255, 0.95)';
-        navbar.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-    }
-});
-
-// Add typing effect to hero title (optional enhancement)
-const heroTitle = document.querySelector('.hero-title');
-if (heroTitle) {
-    const text = heroTitle.innerHTML;
-    heroTitle.innerHTML = '';
-    let index = 0;
     
-    function typeText() {
-        if (index < text.length) {
-            heroTitle.innerHTML += text.charAt(index);
-            index++;
-            setTimeout(typeText, 50);
+    scrollTimeout = setTimeout(() => {
+        scrollTimeout = null;
+        
+        const scrolled = window.pageYOffset;
+        
+        // Parallax effect for hero section
+        const hero = document.querySelector('.hero');
+        const heroContent = document.querySelector('.hero-content');
+        if (hero && heroContent && scrolled < hero.offsetHeight) {
+            heroContent.style.transform = `translateY(${scrolled * 0.5}px)`;
+            heroContent.style.opacity = 1 - scrolled / 800;
         }
-    }
-    
-    // Uncomment to enable typing effect
-    // setTimeout(typeText, 500);
-}
+        
+        // Navbar background on scroll
+        const navbar = document.querySelector('.navbar');
+        if (navbar) {
+            if (scrolled > 50) {
+                navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+                navbar.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+            } else {
+                navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+                navbar.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+            }
+        }
+    }, 10);
+});
 
 // Add particle effect on hover for project cards
 document.querySelectorAll('.project-card').forEach(card => {
@@ -130,13 +121,6 @@ document.querySelectorAll('.project-card').forEach(card => {
         this.style.transform = 'translateY(0) scale(1)';
     });
 });
-
-// Dynamic year in footer
-const footer = document.querySelector('.footer');
-if (footer) {
-    const currentYear = new Date().getFullYear();
-    footer.innerHTML = footer.innerHTML.replace('2024', currentYear);
-}
 
 // Add smooth reveal animation for sections
 const sections = document.querySelectorAll('section');
@@ -166,5 +150,13 @@ if (hero) {
     hero.style.opacity = '1';
     hero.style.transform = 'translateY(0)';
 }
+
+// Update footer year dynamically
+document.addEventListener('DOMContentLoaded', () => {
+    const yearSpan = document.getElementById('year');
+    if (yearSpan) {
+        yearSpan.textContent = new Date().getFullYear();
+    }
+});
 
 console.log('Portfolio website loaded successfully! 🚀');
